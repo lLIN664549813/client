@@ -1,0 +1,272 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 页面整体样式 */
+.chat-page.data-v-6654b3d1 {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #ffffff;
+}
+/* 聊天内容区域 */
+.chat-content.data-v-6654b3d1 {
+    flex: 1;
+    padding: 20rpx;
+    box-sizing: border-box;
+}
+/* 消息时间戳 */
+.message-time.data-v-6654b3d1 {
+    text-align: center;
+    margin: 20rpx 0;
+}
+.message-time text.data-v-6654b3d1 {
+    font-size: 24rpx;
+    color: #999;
+    background-color: #e5e5e5;
+    padding: 8rpx 20rpx;
+    border-radius: 16rpx;
+}
+/* 消息项通用 */
+.message-item.data-v-6654b3d1 {
+    margin-bottom: 30rpx;
+}
+/* 头像样式 */
+.avatar.data-v-6654b3d1 {
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+}
+/* 消息气泡通用 */
+.message-bubble.data-v-6654b3d1 {
+    max-width: 500rpx;
+    padding: 20rpx;
+    border-radius: 16rpx;
+    box-sizing: border-box;
+}
+/* 对方消息（左） */
+.message-left.data-v-6654b3d1 {
+    display: flex;
+    align-items: flex-start;
+}
+.message-left .avatar.data-v-6654b3d1 {
+    margin-right: 20rpx;
+}
+.receive-bubble.data-v-6654b3d1 {
+    background-color: #fff;
+    border-top-left-radius: 0;
+}
+/* 自己消息（右） */
+.message-right.data-v-6654b3d1 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+}
+.message-right .avatar.data-v-6654b3d1 {
+    margin-left: 20rpx;
+}
+.send-bubble.data-v-6654b3d1 {
+    background-color: #007aff;
+    border-top-right-radius: 0;
+}
+.send-bubble .message-text.data-v-6654b3d1 {
+    color: #fff;
+}
+/* 消息图片 */
+.message-img.data-v-6654b3d1 {
+    width: 200rpx;
+    height: auto;
+    border-radius: 8rpx;
+}
+/* 消息文字 */
+.message-text.data-v-6654b3d1 {
+    font-size: 28rpx;
+    line-height: 1.5;
+}
+/* 底部输入区域 */
+.chat-footer.data-v-6654b3d1 {
+    display: flex;
+    align-items: center;
+    height: 100rpx;
+    padding: 0 20rpx;
+    background-color: #fff;
+    border-top: 1px solid #eee;
+}
+.plus-icon.data-v-6654b3d1 {
+    color: #666;
+    margin-right: 20rpx;
+}
+.msg-input.data-v-6654b3d1 {
+    flex: 1;
+    height: 60rpx;
+    background-color: #f5f5f5;
+    border-radius: 30rpx;
+    padding: 0 20rpx;
+    font-size: 28rpx;
+}
+.send-btn.data-v-6654b3d1 {
+    width: 120rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    font-size: 28rpx;
+    margin-left: 20rpx;
+    border: none;
+}
+

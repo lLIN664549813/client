@@ -1,0 +1,122 @@
+@charset "UTF-8";
+/**
+ * uni-app内置的常用样式变量
+ */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+/* 页面整体样式 */
+.about-page.data-v-7c19e434 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #ffffff;
+}
+/* 主体内容区 */
+.about-content.data-v-7c19e434 {
+  flex: 1;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+/* 功能列表 */
+.about-list.data-v-7c19e434 {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 0 30rpx;
+  margin-bottom: 60rpx;
+}
+.about-item.data-v-7c19e434 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 90rpx;
+}
+.about-item.data-v-7c19e434:last-child {
+  border-bottom: none;
+}
+.item-text.data-v-7c19e434 {
+  font-weight: 500;
+  font-size: 32rpx;
+  color: #1E1E2D;
+  line-height: 32rpx;
+}
+.version-text.data-v-7c19e434 {
+  font-weight: 600;
+  font-size: 30rpx;
+  color: #000000;
+  line-height: 36rpx;
+}
+/* 退出登录按钮 */
+.logout-btn.data-v-7c19e434 {
+  width: 80%;
+  height: 88rpx;
+  line-height: 88rpx;
+  color: #fff;
+  font-size: 32rpx;
+  border: none;
+  margin-bottom: 68rpx;
+}
+/* 版本更新弹窗 */
+.version-popup.data-v-7c19e434 {
+  width: 80%;
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  position: relative;
+  text-align: center;
+}
+.close-icon.data-v-7c19e434 {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  color: #999;
+}
+.version-icon.data-v-7c19e434 {
+  width: 80rpx;
+  height: 80rpx;
+  margin: 0 auto 20rpx;
+}
+.version-title.data-v-7c19e434 {
+  font-weight: 400;
+  font-size: 40rpx;
+  color: #141416;
+  line-height: 48rpx;
+  display: block;
+  margin-bottom: 108rpx;
+}
+.version-desc.data-v-7c19e434 {
+  font-weight: 500;
+  font-size: 32rpx;
+  color: #1E1E2D;
+  line-height: 32rpx;
+  display: block;
+  margin-bottom: 5rpx;
+}
+.version-btn-group.data-v-7c19e434 {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 30rpx;
+}
+.version-btn.data-v-7c19e434 {
+  flex: 1;
+  height: 70rpx;
+  width: 280rpx;
+  line-height: 70rpx;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  border: none;
+}
+.cancel-btn.data-v-7c19e434 {
+  background-color: #fff;
+  color: #404040;
+  border: 2px solid #9933ff;
+}

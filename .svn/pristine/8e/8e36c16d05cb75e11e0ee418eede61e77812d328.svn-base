@@ -1,0 +1,166 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 导航栏容器：包含状态栏+主体 */
+.nav-bar-container.data-v-010c2ed8 {
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #eee;
+    /* 底部分隔线，可选 */
+}
+/* 状态栏占位：高度动态计算 */
+.status-bar.data-v-010c2ed8 {
+    width: 100%;
+}
+/* 导航栏主体：flex布局，水平均分 */
+.nav-bar-main.data-v-010c2ed8 {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 30rpx;
+}
+/* 左侧区域：返回按钮 */
+.nav-bar-left.data-v-010c2ed8 {
+    width: 80rpx;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.back-icon.data-v-010c2ed8 {
+    cursor: pointer;
+}
+/* 中间区域：标题 */
+.nav-bar-center.data-v-010c2ed8 {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.nav-bar-title.data-v-010c2ed8 {
+    font-weight: 400;
+    font-size: 36rpx;
+    color: #0B1526;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* 右侧区域：自定义内容 */
+.nav-bar-right.data-v-010c2ed8 {
+    width: 80rpx;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+

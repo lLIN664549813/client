@@ -1,0 +1,121 @@
+@charset "UTF-8";
+/**
+ * uni-app内置的常用样式变量
+ */
+/* 行为相关颜色 */
+/* 文字基本颜色 */
+/* 背景颜色 */
+/* 边框颜色 */
+/* 尺寸变量 */
+/* 文字尺寸 */
+/* 图片尺寸 */
+/* Border Radius */
+/* 水平间距 */
+/* 垂直间距 */
+/* 透明度 */
+/* 文章场景相关 */
+.image-preview-wrap.data-v-7f25f924 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  overflow: hidden;
+}
+.image-preview-wrap .preview-mask.data-v-7f25f924 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.image-preview-wrap .preview-content.data-v-7f25f924 {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+.image-preview-wrap .preview-content .preview-swiper.data-v-7f25f924 {
+  width: 100%;
+  height: 100%;
+}
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item.data-v-7f25f924 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap.data-v-7f25f924 {
+  touch-action: none;
+  -webkit-transform-origin: center center;
+          transform-origin: center center;
+  will-change: transform;
+  position: relative;
+  z-index: 3;
+}
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .preview-img.data-v-7f25f924 {
+  max-width: 100%;
+  max-height: 100vh;
+  display: block;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .img-loading.data-v-7f25f924,
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .img-error.data-v-7f25f924 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  z-index: 4;
+}
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .img-loading .loading-text.data-v-7f25f924,
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .img-loading .error-text.data-v-7f25f924,
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .img-error .loading-text.data-v-7f25f924,
+.image-preview-wrap .preview-content .preview-swiper .preview-swiper-item .img-scale-wrap .img-error .error-text.data-v-7f25f924 {
+  font-size: 28rpx;
+  color: #fff;
+}
+.image-preview-wrap .close-btn.data-v-7f25f924 {
+  position: absolute;
+  top: 40rpx;
+  right: 40rpx;
+  width: 80rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  z-index: 10;
+}
+.image-preview-wrap .close-btn.data-v-7f25f924:active {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.image-preview-wrap .page-tip.data-v-7f25f924 {
+  position: absolute;
+  bottom: 40rpx;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  padding: 8rpx 20rpx;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 20rpx;
+  z-index: 10;
+}
+.image-preview-wrap .page-tip .tip-text.data-v-7f25f924 {
+  font-size: 28rpx;
+  color: #fff;
+}

@@ -1,0 +1,600 @@
+<template>
+    <view class="mine-page">
+        <!-- 顶部用户信息区 -->
+        <view class="user-header">
+            <!-- 头像 -->
+            <view class="user-avatar-wrapper">
+                <image class="user-avatar" src="/static/images/avatar.png" mode="aspectFit"></image>
+                <uni-icons type="compose" size="20" class="avatar-edit"></uni-icons>
+            </view>
+
+            <!-- 语言选择悬浮层触发按钮 -->
+            <view class="lang-trigger" @click="toggleLangPopup">
+                <view class="lang-icon-content">
+                    <image class="lang-icon" :src="langOptions[currentLang].icon" mode="aspectFit"></image>
+                </view>
+                <text class="current-lang">{{ langOptions[currentLang].name }}</text>
+            </view>
+
+            <!-- 语言选择弹窗（悬浮层） -->
+            <!-- <uni-popup ref="langPopup" type="top" :mask-click="true" class="lang-popup">
+                <view class="lang-list">
+                    <view class="lang-item" :class="{ active: currentLang === 'zh' }" @click="changeLang('zh')">
+                        <text>中文</text>
+                        <uni-icons type="success" size="20" v-if="currentLang === 'zh'"></uni-icons>
+                    </view>
+                    <view class="lang-item" :class="{ active: currentLang === 'en' }" @click="changeLang('en')">
+                        <text>English</text>
+                        <uni-icons type="success" size="20" v-if="currentLang === 'en'"></uni-icons>
+                    </view>
+                </view>
+            </uni-popup> -->
+
+            <!-- 用户Logo + ID/邮箱 -->
+            <view class="user-info">
+                <text class="user-id">61953174</text>
+                <text class="user-email">5258112222@emeri.suzuha</text>
+            </view>
+
+            <!-- 资产栏 -->
+            <view class="asset-bar">
+                <view class="asset-info">
+
+                    <text class="asset-label">当前资产</text>
+                    <text class="asset-value">25,000 REP</text>
+                </view>
+                <!-- 充值/转账按钮 -->
+                <view class="btn-group">
+                    <view class="operate-btn" @click="goToRecharge">充值</view>
+                    <view class="operate-btn" @click="goToTransfer">转账</view>
+                </view>
+            </view>
+
+        </view>
+        <view class="func-title">
+            <text>个人资料</text>
+        </view>
+
+        <!-- 功能列表区 -->
+        <scroll-view class="func-list" scroll-y>
+
+            <!-- 账号ID -->
+            <view class="func-item">
+                <text class="func-label">账号ID</text>
+                <view class="func-right">
+                    <text class="func-value">61953174</text>
+                    <text class="func-value" @click="copyId">复制</text>
+                </view>
+            </view>
+
+            <!-- 绑定GatewayID -->
+            <view class="func-item" @click="openBindPopup">
+                <text class="func-label">绑定GatewayID</text>
+                <view class="func-right" v-if="!isBind">
+                    <text class="func-value">绑定</text>
+                </view>
+                <text class="func-value" v-else>61953174</text>
+            </view>
+
+            <!-- 我的钱包 -->
+            <view class="func-item" @click="goToWallet">
+                <text class="func-label">我的钱包</text>
+                <uni-icons type="arrowright" size="20" class="func-arrow"></uni-icons>
+            </view>
+
+            <!-- 收款方式 -->
+            <view class="func-item" @click="goToMyCollection">
+                <text class="func-label">收款方式</text>
+                <uni-icons type="arrowright" size="20" class="func-arrow"></uni-icons>
+            </view>
+
+            <!-- 交易流水 -->
+            <view class="func-item" @click="goToTransactionFlow">
+                <text class="func-label">交易流水</text>
+                <uni-icons type="arrowright" size="20" class="func-arrow"></uni-icons>
+            </view>
+
+            <!-- 联系客服 -->
+            <view class="func-item">
+                <text class="func-label">联系客服</text>
+                <uni-icons type="arrowright" size="20" class="func-arrow"></uni-icons>
+            </view>
+
+            <!-- 设置密码 -->
+            <view class="func-item" @click="goToSetPassword">
+                <text class="func-label">设置密码</text>
+                <uni-icons type="arrowright" size="20" class="func-arrow"></uni-icons>
+            </view>
+
+            <!-- 关于我们 -->
+            <view class="func-item" @click="goToAboutUs">
+                <text class="func-label">关于我们</text>
+                <uni-icons type="arrowright" size="20" class="func-arrow"></uni-icons>
+            </view>
+
+            <!-- 当前版本 -->
+            <view class="func-item version-item">
+                <text class="func-label">当前版本1.0.1</text>
+                <text class="version-tag">新版本1.0.2</text>
+            </view>
+        </scroll-view>
+
+        <!-- 绑定GatewayID确认弹窗 -->
+        <uni-popup ref="bindPopup" type="center" :mask-click="false">
+            <view class="bind-popup">
+                <view class="popup-title flex justify-center">绑定确认</view>
+                <!-- GatewayID -->
+                <view class="popup-item">
+                    <text class="popup-label">GatewayID:</text>
+                    <text class="popup-value">61953174</text>
+                </view>
+                <!-- 登录密码 -->
+                <view class="popup-item">
+                    <text class="popup-label">登录密码</text>
+                    <view class="popup-input">
+                        <input placeholder="请输入登录密码" v-model="tradePwd" :password="showPassword" />
+                        <view @click="showPassword = !showPassword">
+                            <uni-icons v-if="showPassword" type="eye-filled" size="30" color="#7F8192"></uni-icons>
+                            <uni-icons v-else type="eye-slash-filled" size="30" color="#7F8192"></uni-icons>
+                        </view>
+                    </view>
+                </view>
+                <!-- 提示文字 -->
+                <text class="popup-tips">*Gateway ID 一旦绑定确认无法更改。</text>
+                <!-- 按钮组 -->
+                <view class="popup-btn-group">
+                    <button class="popup-btn cancel-btn" @click="closeBindPopup">取消</button>
+                    <button class="popup-btn button-primary" @click="confirmBind">确认</button>
+                </view>
+            </view>
+        </uni-popup>
+    </view>
+</template>
+
+<script>
+export default {
+    data() {
+        return {
+            // 当前语言：zh-中文，en-英文
+            currentLang: "zh",
+            // 是否已绑定GatewayID
+            isBind: false,
+            // 账号ID
+            userId: "61953174",
+            langOptions: {
+                zh: {
+                    // 中文语言选项
+                    name: "中文",
+                    icon: "/static/images/zh_icon.png"
+                },
+                en: {
+                    // 英文语言选项
+                    name: "English",
+                    icon: "/static/images/en_icon.png"
+                }
+            },
+            // 显示密码
+            showPassword: false,
+            tradePwd: ''
+        };
+    },
+    methods: {
+        // 切换语言选择弹窗显示/隐藏
+        toggleLangPopup() {
+            // this.$refs.langPopup.toggle();
+            this.currentLang = this.currentLang === "zh" ? "en" : "zh";
+        },
+        // 切换语言
+        // changeLang(lang) {
+        //     this.currentLang = lang;
+        //     this.$refs.langPopup.close();
+        //     uni.showToast({
+        //         title: `已切换为${lang === "zh" ? "中文" : "English"}`,
+        //         icon: "none"
+        //     });
+        // },
+        // 跳转到充值页面
+        goToRecharge() {
+            uni.navigateTo({
+                url: '/pages/mine/top-up/index'
+            });
+        },
+        // 跳转到转账页面
+        goToTransfer() {
+            uni.navigateTo({
+                url: '/pages/mine/transfer/index'
+            });
+        },
+        // 跳转到我的钱包页面
+        goToWallet() {
+            uni.navigateTo({
+                url: '/pages/mine/wallet/index'
+            });
+        },
+        // 跳转到交易流水页面
+
+        goToTransactionFlow() {
+            uni.navigateTo({
+                url: '/pages/mine/transaction-flow/index'
+            });
+        },
+        // 跳转到我的收款页面
+        goToMyCollection() {
+            uni.navigateTo({
+                url: '/pages/mine/my-collection/index'
+            });
+        },
+        // 跳转到设置密码页面
+        goToSetPassword() {
+            uni.navigateTo({
+                url: '/pages/mine/set-password/index'
+            });
+        },
+        // 跳转到关于我们页面
+        goToAboutUs() {
+            uni.navigateTo({
+                url: '/pages/mine/about-us/index'
+            });
+        },
+
+        // 复制账号ID
+        copyId() {
+            uni.setClipboardData({
+                data: this.userId,
+                success: () => {
+                    uni.showToast({ title: "复制成功", icon: "success" });
+                }
+            });
+        },
+        // 打开绑定确认弹窗
+        openBindPopup() {
+            if (this.isBind) return;
+            this.$refs.bindPopup.open('center');
+        },
+        // 关闭绑定确认弹窗
+        closeBindPopup() {
+            this.$refs.bindPopup.close();
+        },
+        // 确认绑定GatewayID
+        confirmBind() {
+            this.isBind = true;
+            this.closeBindPopup();
+            uni.showToast({ title: "绑定成功", icon: "success" });
+        }
+    }
+};
+</script>
+
+<style scoped lang="scss">
+/* 页面整体样式 */
+.mine-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #fff;
+    width: 100%;
+}
+
+/* 顶部用户信息区 */
+.user-header {
+    padding: 30rpx;
+    color: #fff;
+    position: relative;
+    margin-top: 84rpx;
+
+    .user-avatar-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+
+
+        .user-avatar {
+            width: 160rpx;
+            height: 160rpx;
+            border-radius: 80rpx 80rpx 80rpx 80rpx;
+        }
+
+        .avatar-edit {
+            // width: 56rpx;
+            // height: 56rpx;
+            // background: #D424FE;    
+            // border-radius: 48rpx 48rpx 48rpx 48rpx;
+            // border: 2rpx solid #F7F7F7;
+            // color: #fff;
+        }
+    }
+}
+
+/* 语言选择触发按钮 */
+.lang-trigger {
+    position: absolute;
+    top: 35rpx;
+    right: 76rpx;
+    display: flex;
+    align-items: center;
+    font-size: 24rpx;
+    color: #000;
+
+
+    .lang-icon-content {
+
+        width: 60rpx;
+        height: 60rpx;
+        // border-radius: 50%;
+        // overflow: hidden;
+        margin-right: 10rpx;
+    }
+
+    .lang-icon {
+        width: 60rpx;
+        height: 60rpx;
+        // border-radius: 50%;
+        // transform: translateZ(0);
+
+        /* App端圆角兼容 */
+        // width: 100%;
+        // height: 100%;
+        // border-radius: 50%;
+    }
+}
+
+.lang-arrow {
+    margin-left: 8rpx;
+}
+
+/* 语言选择弹窗 */
+.lang-popup {
+    width: 200rpx;
+    background-color: #fff;
+    border-radius: 8rpx;
+    padding: 10rpx 0;
+}
+
+.lang-list {
+    padding: 10rpx;
+}
+
+.lang-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15rpx 20rpx;
+    font-size: 28rpx;
+    color: #333;
+}
+
+.lang-item.active {
+    color: #9933ff;
+}
+
+/* 用户信息 */
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20rpx;
+    margin-bottom: 20rpx;
+
+    .user-id {
+        margin-bottom: 8rpx;
+        font-weight: 700;
+        font-size: 47rpx;
+        color: #141416;
+        line-height: 63rpx;
+    }
+
+    .user-email {
+        font-size: 31rpx;
+        color: #B1B5C3;
+        line-height: 47rpx;
+    }
+}
+
+
+
+/* 资产栏 */
+.asset-bar {
+    padding: 55rpx 36rpx;
+    height: 288rpx;
+    background: #FFFFFF;
+    border-radius: 20rpx 20rpx 20rpx 20rpx;
+    margin-bottom: 20rpx;
+    background-image: url('/static/images/mine_title_bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+
+    .asset-info {
+        display: flex;
+        justify-content: space-between;
+        line-height: 114rpx;
+
+        .asset-label {
+            font-weight: 700;
+            font-size: 40rpx;
+            color: #FFFFFF;
+        }
+
+        .asset-value {
+            font-weight: 700;
+            font-size: 50rpx;
+            color: #FFFFFF;
+        }
+    }
+
+
+    /* 充值/转账按钮组 */
+    .btn-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 30%;
+        margin-top: 35rpx;
+
+        .operate-btn {
+            font-weight: 600;
+            font-size: 40rpx;
+            color: #000000;
+            line-height: 40rpx;
+        }
+    }
+}
+
+
+
+
+/* 功能列表区 */
+.func-list {
+    flex: 1;
+    padding: 0 48rpx;
+}
+
+.func-title {
+    font-weight: 700;
+    font-size: 32rpx;
+    color: #141416;
+    line-height: 48rpx;
+    padding: 0 48rpx;
+}
+
+.func-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 90rpx;
+    border-bottom: 1px solid #f5f5f5;
+    font-weight: 500;
+    font-size: 32rpx;
+    color: #141416;
+
+
+}
+
+.func-right {
+    display: flex;
+    align-items: center;
+}
+
+.func-value {
+    font-weight: 400;
+    font-size: 32rpx;
+    color: #777E90;
+    margin-right: 10rpx;
+}
+
+.func-arrow {
+    color: #777E90;
+}
+
+.version-item {
+    border-bottom: none;
+}
+
+.version-tag {
+    color: #ff3333;
+    font-size: 24rpx;
+}
+
+/* 底部TabBar */
+.custom-tabbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100rpx;
+    border-top: 1px solid #f5f5f5;
+    background-color: #fff;
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 22rpx;
+    color: #999;
+}
+
+.tab-item.active {
+    color: #9933ff;
+}
+
+.tab-text {
+    margin-top: 8rpx;
+}
+
+/* 绑定确认弹窗 */
+.bind-popup {
+    width: 80%;
+    background-color: #fff;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    text-align: center;
+}
+
+.popup-title {
+    font-size: 32rpx;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30rpx;
+    color: #333;
+}
+
+.popup-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20rpx;
+}
+
+.popup-label {
+    font-size: 28rpx;
+    color: #333;
+    width: 180rpx;
+}
+
+.popup-value {
+    font-size: 28rpx;
+    color: #666;
+}
+
+.popup-input {
+    display: flex;
+    align-items: center;
+    background: #F6F7FB;
+    height: 60rpx;
+    border-radius: 20rpx;
+    padding: 0 20rpx;
+    font-size: 28rpx;
+
+    input {
+        flex: 1;
+    }
+}
+
+.popup-tips {
+    display: block;
+    font-size: 24rpx;
+    color: #ff3333;
+    margin-bottom: 30rpx;
+}
+
+.popup-btn-group {
+    display: flex;
+    gap: 20rpx;
+}
+
+.popup-btn {
+    flex: 1;
+    height: 70rpx;
+    line-height: 70rpx;
+    border-radius: 20rpx;
+    font-size: 28rpx;
+    border: none;
+}
+
+.cancel-btn {
+    line-height: 66rpx;
+    color: #666;
+    background-color: #fff;
+    border: 2px solid #9933ff;
+}
+</style>

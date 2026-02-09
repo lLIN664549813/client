@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "交易流水",
+  "usingComponents": {
+    "nav-bar": "/components/nav-bar/nav-bar"
+  }
+}

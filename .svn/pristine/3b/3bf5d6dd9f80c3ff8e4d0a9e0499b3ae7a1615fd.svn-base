@@ -1,0 +1,244 @@
+<template>
+    <view class="about-page">
+        <!-- 导航栏 -->
+        <nav-bar title="关于我们"></nav-bar>
+
+        <!-- 主体内容区 -->
+        <scroll-view class="about-content">
+            <!-- 功能列表 -->
+            <view class="about-list">
+                <!-- 服务条款 -->
+                <view class="about-item" @click="goToServiceTerms">
+                    <text class="item-text">服务条款</text>
+                    <uni-icons type="right" size="24" color="#A6A6A6"></uni-icons>
+                </view>
+                <!-- 隐私政策 -->
+                <view class="about-item" @click="goToPrivacyPolicy">
+                    <text class="item-text">隐私政策</text>
+                    <uni-icons type="right" size="24" color="#A6A6A6"></uni-icons>
+                </view>
+                <!-- 当前版本 -->
+                <view class="about-item" @click="checkVersion">
+                    <text class="item-text">当前版本</text>
+                    <text class="version-text">1.0</text>
+                </view>
+            </view>
+
+        </scroll-view>
+        <!-- 退出登录按钮 -->
+        <button class="logout-btn button-primary" @click="logout">退出登录</button>
+
+        <!-- 版本更新弹窗 -->
+        <uni-popup ref="versionPopup" type="center" :mask-click="false">
+            <view class="version-popup">
+                <!-- 关闭按钮 -->
+                <uni-icons type="close" size="24" class="close-icon" @click="closeVersionPopup"></uni-icons>
+                <!-- 版本图标 -->
+                <image class="version-icon" src="/static/images/avatar.png" mode="aspectFit"></image>
+                <!-- 版本提示 -->
+                <text class="version-title">发现新版本1.0.1</text>
+                <!-- 更新说明 -->
+                <text class="version-desc">初始更新</text>
+                <text class="version-desc">修复已知BUG</text>
+                <!-- 按钮组 -->
+                <view class="version-btn-group">
+                    <button class="version-btn cancel-btn" @click="closeVersionPopup">取消</button>
+                    <button class="version-btn button-primary" @click="upgradeVersion">立即升级</button>
+                </view>
+            </view>
+        </uni-popup>
+    </view>
+</template>
+
+<script>
+import NavBar from "@/components/nav-bar/nav-bar.vue";
+export default {
+    components: {
+        NavBar
+    },
+    data() {
+        return {
+            currentVersion: "1.0"
+        };
+    },
+    methods: {
+        // 跳转到服务条款
+        goToServiceTerms() {
+            uni.navigateTo({
+                url: '/pages/service-terms/service-terms'
+            });
+        },
+        // 跳转到隐私政策
+        goToPrivacyPolicy() {
+            uni.navigateTo({
+                url: '/pages/privacy-policy/privacy-policy'
+            });
+        },
+        // 检查版本更新
+        checkVersion() {
+            this.$refs.versionPopup.open();
+        },
+        // 关闭版本弹窗
+        closeVersionPopup() {
+            this.$refs.versionPopup.close();
+        },
+        // 立即升级
+        upgradeVersion() {
+            uni.showLoading({ title: "升级中..." });
+            setTimeout(() => {
+                uni.hideLoading();
+                uni.showToast({ title: "升级成功", icon: "success" });
+                this.closeVersionPopup();
+            }, 1500);
+        },
+        // 退出登录
+        logout() {
+            uni.showModal({
+                title: "提示",
+                content: "是否确认退出登录？",
+                success: (res) => {
+                    if (res.confirm) {
+                        // 模拟退出登录
+                        uni.showLoading({ title: "退出中..." });
+                        setTimeout(() => {
+                            uni.hideLoading();
+                            uni.showToast({ title: "退出成功", icon: "success" });
+                            // 跳转到登录页
+                            uni.redirectTo({
+                                url: '/pages/login/login'
+                            });
+                        }, 1000);
+                    }
+                }
+            });
+        }
+    }
+};
+</script>
+
+<style scoped lang="scss">
+/* 页面整体样式 */
+.about-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #ffffff;
+}
+
+
+/* 主体内容区 */
+.about-content {
+    flex: 1;
+    padding: 30rpx;
+    box-sizing: border-box;
+}
+
+/* 功能列表 */
+.about-list {
+    background-color: #fff;
+    border-radius: 16rpx;
+    padding: 0 30rpx;
+    margin-bottom: 60rpx;
+}
+
+.about-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 90rpx;
+    // border-bottom: 1px solid #f5f5f5;
+}
+
+.about-item:last-child {
+    border-bottom: none;
+}
+
+.item-text {
+    font-weight: 500;
+    font-size: 32rpx;
+    color: #1E1E2D;
+    line-height: 32rpx;
+}
+
+.version-text {
+    font-weight: 600;
+    font-size: 30rpx;
+    color: #000000;
+    line-height: 36rpx;
+}
+
+/* 退出登录按钮 */
+.logout-btn {
+
+    width: 80%;
+    height: 88rpx;
+    line-height: 88rpx;
+    color: #fff;
+    font-size: 32rpx;
+    border: none;
+    margin-bottom: 68rpx;
+}
+
+/* 版本更新弹窗 */
+.version-popup {
+    width: 80%;
+    background-color: #fff;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    position: relative;
+    text-align: center;
+}
+
+.close-icon {
+    position: absolute;
+    top: 20rpx;
+    right: 20rpx;
+    color: #999;
+}
+
+.version-icon {
+    width: 80rpx;
+    height: 80rpx;
+    margin: 0 auto 20rpx;
+}
+
+.version-title {
+    font-weight: 400;
+    font-size: 40rpx;
+    color: #141416;
+    line-height: 48rpx;
+    display: block;
+    margin-bottom: 108rpx;
+}
+
+.version-desc {
+    font-weight: 500;
+    font-size: 32rpx;
+    color: #1E1E2D;
+    line-height: 32rpx;
+    display: block;
+    margin-bottom: 5rpx;
+}
+
+.version-btn-group {
+    display: flex;
+    gap: 20rpx;
+    margin-top: 30rpx;
+}
+
+.version-btn {
+    flex: 1;
+    height: 70rpx;
+    width: 280rpx;
+    line-height: 70rpx;
+    border-radius: 20rpx;
+    font-size: 28rpx;
+    border: none;
+}
+
+.cancel-btn {
+    background-color: #fff;
+    color: #404040;
+    border: 2px solid #9933ff;
+}
+</style>

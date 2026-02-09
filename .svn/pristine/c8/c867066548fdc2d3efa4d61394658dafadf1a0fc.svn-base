@@ -1,0 +1,159 @@
+<template>
+  <view class="content">
+    <image class="logo" src="@/static/images/profile.jpg"></image>
+    <view class="text-area">
+      <text class="title">61953174</text>
+      <text class="title-time">可交易时间：UTC+8 9:00-21:00</text>
+    </view>
+    <view class="image-content">
+      <text class="overlay left">0.823</text>
+      <text class="overlay right">0.852</text>
+    </view>
+    <view class="tab">
+      <view :class="['tab-item', current === index ? 'tab-background' : '']" v-for="(item, index) in items"
+        :key="item.id" @click="onClickItem(item)">
+        {{ item.name }}
+      </view>
+    </view>
+    <scroll-view scroll-y class="tab-content">
+        <component :is="items[current].comName"></component>
+    </scroll-view>
+  </view>
+</template>
+<script>
+import buy from "./components/buy.vue";
+import sell from "./components/sell.vue";
+export default {
+  components: {
+    buy,
+    sell
+  },
+  data() {
+    return {
+      current: 0,
+      items: [{ name: "我要买", id: 0, comName: "buy" }, { name: "我要卖", id: 1, comName: "sell" }],
+    };
+  },
+  methods: {
+    onClickItem(e) {
+      if (this.current != e.id) {
+        this.current = e.id;
+      }
+    },
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 48px;
+  height: 100vh;
+  /* 导航栏高度90rpx + iOS安全区高度 */
+  padding-bottom: calc(90rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.logo {
+  height: 80rpx;
+  width: 80rpx;
+  margin-top: 114rpx;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 30rpx;
+  border-radius: 126rpx;
+}
+
+.text-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 48rpx;
+  color: #141416;
+  line-height: 64rpx;
+}
+
+.title-time {
+  font-weight: 500;
+  font-size: 32rpx;
+  color: #ea0000;
+  line-height: 48rpx;
+  margin-bottom: 38rpx;
+}
+
+.image-content {
+  width: 100%;
+  position: relative;
+  height: 224rpx;
+  background-image: url("/static/images/home-title.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+
+/* 覆盖文字：使用百分比 + transform 保证在不同屏幕上位置保持相对稳定 */
+.image-content .overlay {
+  position: absolute;
+  top: 20%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-size: 36rpx;
+  line-height: 1;
+  -webkit-text-size-adjust: none;
+}
+
+.image-content .left {
+  left: 25%;
+}
+
+.image-content .right {
+  right: 0;
+}
+
+@media (max-width: 360px) {
+  .image-content .overlay {
+    font-size: 30rpx;
+  }
+}
+
+.tab {
+  display: flex;
+  justify-content: space-between;
+
+  .tab-item {
+    width: 256rpx;
+    height: 108rpx;
+    text-align: center;
+    border-radius: 20rpx;
+    font-weight: 400;
+    font-size: 40rpx;
+    color: #89888d;
+    line-height: 108rpx;
+  }
+
+  .tab-background {
+    font-weight: 700;
+    font-size: 36rpx;
+    color: #141416;
+    background-image: url("/static/images/tab-bg.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    line-height: 102rpx;
+  }
+}
+
+.tab-content {
+  width: 100%;
+  margin-top: 32rpx;
+  flex: 1;
+}
+</style>

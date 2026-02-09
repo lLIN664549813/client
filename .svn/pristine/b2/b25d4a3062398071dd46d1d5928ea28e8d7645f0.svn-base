@@ -1,0 +1,346 @@
+<template>
+    <view class="set-pwd-page">
+        <!-- 顶部导航栏 -->
+        <NavBar title="我的收款"></NavBar>
+
+        <!-- 密码类型切换标签 -->
+        <view class="tab-group">
+            <view class="tab-item" :class="{ active: pwdType === 'login' }" @click="switchType('login')">
+                <text>登录密码</text>
+            </view>
+            <view class="tab-item" :class="{ active: pwdType === 'trade' }" @click="switchType('trade')">
+                <text>交易密码</text>
+            </view>
+        </view>
+        <!-- 主体内容区 -->
+        <scroll-view class="set-content" scroll-y>
+
+            <!-- 表单区域 -->
+            <view class="form-list">
+                <!-- 登录密码表单 -->
+                <view v-if="pwdType === 'login'">
+                    <!-- 账号输入（带头像） -->
+                    <view class="form-item">
+                        <uni-icons type="person" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" type="text" placeholder="请输入账号" v-model="loginForm.account"
+                            value="61954657" />
+                    </view>
+                    <!-- 原登录密码（带图标） -->
+                    <view class="form-item">
+                        <uni-icons type="locked" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" type="password" placeholder="登录密码" v-model="loginForm.oldPwd" />
+                    </view>
+                    <!-- 新密码（带图标+显隐） -->
+                    <view class="form-item">
+                        <uni-icons type="locked" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" :type="showLoginPwd ? 'text' : 'password'" placeholder="新密码"
+                            v-model="loginForm.newPwd" />
+                        <uni-icons :type="showLoginPwd ? 'eye-slash' : 'eye'" size="24" class="pwd-icon"
+                            @click="showLoginPwd = !showLoginPwd"></uni-icons>
+                    </view>
+                    <!-- 确认新密码（带图标+显隐） -->
+                    <view class="form-item">
+                        <uni-icons type="locked" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" :type="showLoginConfirmPwd ? 'text' : 'password'" placeholder="确认新密码"
+                            v-model="loginForm.confirmPwd" />
+                        <uni-icons :type="showLoginConfirmPwd ? 'eye-slash' : 'eye'" size="24" class="pwd-icon"
+                            @click="showLoginConfirmPwd = !showLoginConfirmPwd"></uni-icons>
+                    </view>
+                </view>
+
+                <!-- 交易密码表单 -->
+                <view v-if="pwdType === 'trade'">
+                    <!-- 邮箱输入（带图标） -->
+                    <view class="form-item">
+                        <uni-icons type="email" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" type="text" placeholder="请输入邮箱" v-model="tradeForm.email"
+                            value="1371418951@163.com" />
+                    </view>
+                    <!-- 验证码（带图标+获取按钮） -->
+                    <view class="form-item code-item">
+                        <uni-icons type="phone" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input code-input" type="text" placeholder="验证码"
+                            v-model="tradeForm.code" />
+                        <view class="get-code-btn" @click="getCode" :disabled="countDown > 0">
+                            {{ countDown > 0 ? `${countDown}s后重新获取` : '获取验证码' }}
+                        </view>
+                    </view>
+                    <!-- 新密码（带图标+显隐） -->
+                    <view class="form-item">
+                        <uni-icons type="locked" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" :type="showTradePwd ? 'text' : 'password'" placeholder="新密码"
+                            v-model="tradeForm.newPwd" />
+                        <uni-icons :type="showTradePwd ? 'eye-slash' : 'eye'" size="24" class="pwd-icon"
+                            @click="showTradePwd = !showTradePwd"></uni-icons>
+                    </view>
+                    <!-- 确认新密码（带图标+显隐） -->
+                    <view class="form-item">
+                        <uni-icons type="locked" size="24" color="#979797" class="form-icon"></uni-icons>
+                        <text class="form-line"></text>
+                        <input class="form-input" :type="showTradeConfirmPwd ? 'text' : 'password'" placeholder="确认新密码"
+                            v-model="tradeForm.confirmPwd" />
+                        <uni-icons :type="showTradeConfirmPwd ? 'eye-slash' : 'eye'" size="24" class="pwd-icon"
+                            @click="showTradeConfirmPwd = !showTradeConfirmPwd"></uni-icons>
+                    </view>
+                </view>
+            </view>
+
+            <!-- 确认按钮 -->
+            <button class="confirm-btn button-primary" @click="submitPwd">确认</button>
+        </scroll-view>
+    </view>
+</template>
+
+<script>
+import NavBar from "@/components/nav-bar/nav-bar.vue";
+export default {
+    components: {
+        NavBar
+    },
+    data() {
+        return {
+            // 密码类型：login-登录密码，trade-交易密码
+            pwdType: "login", // 默认选中交易密码
+            // 登录密码表单
+            loginForm: {
+                account: "61954657",
+                oldPwd: "",
+                newPwd: "",
+                confirmPwd: ""
+            },
+            // 交易密码表单
+            tradeForm: {
+                email: "1371418951@163.com",
+                code: "",
+                newPwd: "",
+                confirmPwd: ""
+            },
+            // 验证码倒计时
+            countDown: 0,
+            timer: null,
+            // 密码显隐
+            showLoginPwd: false,
+            showLoginConfirmPwd: false,
+            showTradePwd: false,
+            showTradeConfirmPwd: false
+        };
+    },
+    methods: {
+        // 返回上一页
+        goBack() {
+            uni.navigateBack();
+        },
+        // 切换密码类型
+        switchType(type) {
+            this.pwdType = type;
+        },
+        // 获取验证码
+        getCode() {
+            if (!this.tradeForm.email.trim()) {
+                uni.showToast({ title: "请输入邮箱", icon: "none" });
+                return;
+            }
+            // 模拟发送验证码
+            this.countDown = 60;
+            this.timer = setInterval(() => {
+                this.countDown--;
+                if (this.countDown <= 0) {
+                    clearInterval(this.timer);
+                    this.timer = null;
+                }
+            }, 1000);
+            uni.showToast({ title: "验证码已发送", icon: "success" });
+        },
+        // 提交密码设置
+        submitPwd() {
+            // 登录密码校验
+            if (this.pwdType === "login") {
+                if (!this.loginForm.oldPwd) {
+                    uni.showToast({ title: "请输入原登录密码", icon: "none" });
+                    return;
+                }
+                if (!this.loginForm.newPwd) {
+                    uni.showToast({ title: "请输入新密码", icon: "none" });
+                    return;
+                }
+                if (this.loginForm.newPwd !== this.loginForm.confirmPwd) {
+                    uni.showToast({ title: "两次密码输入不一致", icon: "none" });
+                    return;
+                }
+            }
+
+            // 交易密码校验
+            if (this.pwdType === "trade") {
+                if (!this.tradeForm.code) {
+                    uni.showToast({ title: "请输入验证码", icon: "none" });
+                    return;
+                }
+                if (!this.tradeForm.newPwd) {
+                    uni.showToast({ title: "请输入新密码", icon: "none" });
+                    return;
+                }
+                if (this.tradeForm.newPwd !== this.tradeForm.confirmPwd) {
+                    uni.showToast({ title: "两次密码输入不一致", icon: "none" });
+                    return;
+                }
+            }
+
+            // 模拟提交
+            uni.showLoading({ title: "提交中..." });
+            setTimeout(() => {
+                uni.hideLoading();
+                uni.showToast({ title: "密码设置成功", icon: "success" });
+                this.goBack();
+            }, 1000);
+        }
+    },
+    onUnload() {
+        // 清除倒计时定时器
+        if (this.timer) clearInterval(this.timer);
+    }
+};
+</script>
+
+<style scoped lang="scss">
+/* 页面整体样式 */
+.set-pwd-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #ffffff;
+}
+
+
+/* 主体内容区 */
+.set-content {
+    flex: 1;
+    padding: 30rpx;
+    box-sizing: border-box;
+}
+
+/* 切换标签组 */
+/* 切换标签组 */
+.tab-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20rpx;
+    margin-bottom: 18rpx;
+    margin-top: 52rpx;
+
+    .tab-item {
+        width: 208rpx;
+        height: 98rpx;
+        background: #EDEEF0;
+        border-radius: 12rpx 12rpx 12rpx 12rpx;
+        border: 0rpx solid rgba(237, 238, 240, 0.8784);
+        line-height: 98rpx;
+        font-weight: 400;
+        font-size: 28rpx;
+        color: #0B1526;
+        text-align: center;
+    }
+
+    .tab-item.active {
+        background: #F4F0FF;
+        border-radius: 12rpx 12rpx 12rpx 12rpx;
+        border: 2rpx solid #5E28FF;
+        color: #5F2AFF;
+    }
+}
+
+/* 表单区域 */
+.form-list {
+    background-color: #fff;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    margin-bottom: 40rpx;
+}
+
+.form-item {
+    margin-bottom: 30rpx;
+    display: flex;
+    align-items: center;
+    background: #FFFFFF;
+    border-radius: 20rpx 20rpx 20rpx 20rpx;
+    border: 2rpx solid #E2E2E2;
+    padding: 22rpx 40rpx;
+
+    .form-line {
+        margin-left: 24rpx;
+        width: 2rpx;
+        height: 40rpx;
+        background: #D2D1D6;
+        color: #D2D1D6;
+
+    }
+}
+
+.form-icon {
+    color: #999;
+    margin-right: 15rpx;
+    width: 24rpx;
+    text-align: center;
+}
+
+.form-input {
+    height: 70rpx;
+    border-radius: 8rpx;
+    padding: 0 20rpx;
+    font-size: 28rpx;
+    color: #333;
+    flex: 1;
+    box-sizing: border-box;
+}
+
+
+/* 密码显隐图标 */
+.pwd-icon {
+    color: #999;
+}
+
+/* 验证码输入项 */
+.code-item {
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+}
+
+.code-input {
+    flex: 1;
+}
+
+.get-code-btn {
+    width: 200rpx;
+    height: 70rpx;
+    line-height: 70rpx;
+    background: #FFFFFF;
+    color: #9B9AA0;
+    border-radius: 20rpx;
+    font-size: 24rpx;
+    border: none;
+}
+
+.get-code-btn:disabled {
+    background-color: #ccc;
+    color: #fff;
+}
+
+/* 确认按钮 */
+.confirm-btn {
+    width: 100%;
+    height: 88rpx;
+    line-height: 88rpx;
+    color: #fff;
+    font-size: 32rpx;
+    border: none;
+}
+</style>
