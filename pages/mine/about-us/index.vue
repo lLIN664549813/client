@@ -52,6 +52,8 @@
 
 <script>
 import NavBar from "@/components/nav-bar/nav-bar.vue";
+import { getProtocolSingle } from "@/api/mine";
+
 export default {
     components: {
         NavBar
@@ -63,16 +65,31 @@ export default {
     },
     methods: {
         // 跳转到服务条款
-        goToServiceTerms() {
-            uni.navigateTo({
-                url: '/pages/service-terms/service-terms'
-            });
+        async goToServiceTerms() {
+            await this.openProtocolPage('1', '服务条款');
         },
         // 跳转到隐私政策
-        goToPrivacyPolicy() {
-            uni.navigateTo({
-                url: '/pages/privacy-policy/privacy-policy'
-            });
+        async goToPrivacyPolicy() {
+            await this.openProtocolPage('2', '隐私政策');
+        },
+        // 打开协议详情页
+        async openProtocolPage(type, defaultTitle) {
+            try {
+                const res = await getProtocolSingle({ type, lang: 'zh_CN' });
+                const data = res && res.data ? res.data : {};
+                const title = data.title || defaultTitle;
+                const content = data.content || '';
+                uni.navigateTo({
+                    url: `/pages/common/textview/index?title=${encodeURIComponent(title)}`,
+                    success: (navigateRes) => {
+                        if (navigateRes && navigateRes.eventChannel) {
+                            navigateRes.eventChannel.emit('protocolData', { title, content });
+                        }
+                    }
+                });
+            } catch (e) {
+                // 请求层已提示错误
+            }
         },
         // 检查版本更新
         checkVersion() {
@@ -96,18 +113,17 @@ export default {
             uni.showModal({
                 title: "提示",
                 content: "是否确认退出登录？",
-                success: (res) => {
+                success: async (res) => {
                     if (res.confirm) {
-                        // 模拟退出登录
-                        uni.showLoading({ title: "退出中..." });
-                        setTimeout(() => {
+                        try {
+                            uni.showLoading({ title: "退出中..." });
+                            await this.$store.dispatch('LogOut');
                             uni.hideLoading();
                             uni.showToast({ title: "退出成功", icon: "success" });
-                            // 跳转到登录页
-                            uni.redirectTo({
-                                url: '/pages/login/login'
-                            });
-                        }, 1000);
+                            this.$tab.reLaunch('/pages/login');
+                        } catch (e) {
+                            uni.hideLoading();
+                        }
                     }
                 }
             });

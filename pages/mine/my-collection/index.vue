@@ -6,23 +6,26 @@
         <!-- 主体内容区 -->
         <scroll-view class="collection-content" scroll-y>
             <!-- 收款卡片 -->
-            <uni-card :is-shadow="true" :border-radius="20" class="collection-card">
+            <uni-card :is-shadow="true" :border-radius="20" class="collection-card" v-for="item in walletList"
+                :key="item.walletId">
                 <view class="card-title flex justify-between algin-center">
                     <view class="card-title-one">
-                        <image style="width: 54rpx;height: 54rpx;" src="/static/images/dui.png"></image>
-                        <text class="tag-text">设为默认</text>
+                        <image style="width: 54rpx;height: 54rpx;" src="/static/images/dui.png" @click="setDefault(item)"></image>
+                        <text class="tag-text">{{ item.defaultFlag === 'Y' ? '默认收款' : '设为默认' }}</text>
                     </view>
-                    <view class="card-title-two">YoTu</view>
+                    <view class="card-title-two">{{ item.walletName || '--' }}</view>
                     <view class="card-title-one">
-                        <uni-icons type="trash" size="40" color="#FB0B0B" @click="openDeletePopup"></uni-icons>
+                        <uni-icons type="trash" size="40" color="#FB0B0B" @click="openDeletePopup(item)"></uni-icons>
                         <text style="color: #FB0B0B;margin-top: 20rpx;">删除</text>
                     </view>
                 </view>
                 <!-- 收款二维码 -->
-                <image class="qrcode-img" src="/static/images/profile.jpg" mode="aspectFit"></image>
+                <image class="qrcode-img" :src="item.walletQrcode || '/static/images/profile.jpg'" mode="aspectFit"></image>
                 <!-- 收款地址 -->
-                <text class="address-text">7386jdjehdfk1dfga253</text>
+                <text class="address-text">{{ item.walletAddr || '--' }}</text>
             </uni-card>
+
+            <view v-if="walletList.length === 0" class="empty-wrap">暂无收款方式</view>
         </scroll-view>
 
         <!-- 删除钱包确认弹窗 -->
@@ -40,26 +43,31 @@
 </template>
 
 <script>
+import { listMemberWallets, removeReceiveWallet, setDefaultWallet } from "@/api/mine";
 
 export default {
     data() {
         return {
-            // 收款信息（模拟）
-            collectionInfo: {
-                label: "YoTu",
-                isDefault: true,
-                qrcode: "/static/collection-qrcode.png",
-                address: "7386jdjehdfk1dfga253"
-            }
+            walletList: [],
+            deleteWalletId: null
         };
     },
+    onShow() {
+        this.loadWallets();
+    },
     methods: {
-        // 返回上一页
-        goBack() {
-            uni.navigateBack();
+        async loadWallets() {
+            try {
+                const res = await listMemberWallets();
+                const list = res && res.data ? res.data : [];
+                this.walletList = Array.isArray(list) ? list : [];
+            } catch (e) {
+                this.walletList = [];
+            }
         },
         // 打开删除弹窗
-        openDeletePopup() {
+        openDeletePopup(item) {
+            this.deleteWalletId = item.walletId;
             this.$refs.deletePopup.open();
         },
         // 关闭删除弹窗
@@ -67,15 +75,32 @@ export default {
             this.$refs.deletePopup.close();
         },
         // 确认删除
-        confirmDelete() {
+        async confirmDelete() {
+            if (!this.deleteWalletId) {
+                return;
+            }
             uni.showLoading({ title: "删除中..." });
-            setTimeout(() => {
+            try {
+                await removeReceiveWallet(this.deleteWalletId);
                 uni.hideLoading();
                 uni.showToast({ title: "删除成功", icon: "success" });
                 this.closeDeletePopup();
-                // 实际项目可跳转或刷新列表
-                this.goBack();
-            }, 1000);
+                this.loadWallets();
+            } catch (e) {
+                uni.hideLoading();
+            }
+        },
+        async setDefault(item) {
+            if (!item || !item.walletId) {
+                return;
+            }
+            try {
+                await setDefaultWallet(item.walletId);
+                uni.showToast({ title: "默认收款已更新", icon: "success" });
+                this.loadWallets();
+            } catch (e) {
+                // 请求层已处理错误提示
+            }
         }
     }
 };
@@ -196,6 +221,13 @@ export default {
     color: #1B1E26;
     line-height: 40rpx;
     word-break: break-all;
+}
+
+.empty-wrap {
+    text-align: center;
+    color: #999;
+    font-size: 28rpx;
+    padding: 80rpx 0;
 }
 
 /* 删除确认弹窗 */

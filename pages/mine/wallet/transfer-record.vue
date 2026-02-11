@@ -38,6 +38,7 @@
 
 <script>
 import NavBar from "@/components/nav-bar/nav-bar.vue";
+import { getAccountBills } from "@/api/mine";
 export default {
     components: {
         NavBar
@@ -46,29 +47,12 @@ export default {
         return {
             // 记录类型：income-收入，expense-支出
             recordType: "income",
-            // 模拟转账记录数据
-            recordList: [
-                {
-                    type: "income",
-                    title: "账户充值",
-                    amount: "USDT +150",
-                    time: "2025-11-20 15:45:52"
-                },
-                {
-                    type: "expense",
-                    title: "账户转账",
-                    desc: "对方账户: 61954657",
-                    amount: "USDT -150",
-                    time: "2025-11-20 15:45:52"
-                },
-                {
-                    type: "expense",
-                    title: "实名认证",
-                    amount: "USDT -1",
-                    time: "2025-11-20 15:45:52"
-                }
-            ]
+            // 账单记录
+            recordList: []
         };
+    },
+    onShow() {
+        this.loadBills();
     },
     computed: {
         // 根据类型筛选记录
@@ -77,6 +61,51 @@ export default {
         }
     },
     methods: {
+        async loadBills() {
+            try {
+                const res = await getAccountBills({ pageNum: 1, pageSize: 50 });
+                const rows = this.extractRows(res);
+                this.recordList = rows.map(item => {
+                    const amount = Number(item.amount);
+                    const isIncome = amount >= 0;
+                    return {
+                        type: isIncome ? 'income' : 'expense',
+                        title: item.dealTypeName || item.dealName || item.transactionType || '账户变动',
+                        desc: item.transactionNo ? `流水号: ${item.transactionNo}` : '',
+                        amount: `${item.assetType || 'USDT'} ${isIncome ? '+' : ''}${Number.isNaN(amount) ? item.amount : amount}`,
+                        time: this.formatTime(item.createTime)
+                    };
+                });
+            } catch (e) {
+                this.recordList = [];
+            }
+        },
+        extractRows(res) {
+            if (!res || !res.data) {
+                return [];
+            }
+            if (Array.isArray(res.data)) {
+                return res.data;
+            }
+            if (Array.isArray(res.data.rows)) {
+                return res.data.rows;
+            }
+            if (Array.isArray(res.rows)) {
+                return res.rows;
+            }
+            return [];
+        },
+        formatTime(value) {
+            if (!value) {
+                return '--';
+            }
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return String(value);
+            }
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        },
         // 切换记录类型
         switchType(type) {
             this.recordType = type;

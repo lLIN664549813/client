@@ -30,7 +30,7 @@
 
                 <!-- 可转出金额提示 -->
                 <text class="balance-tip">
-                    可转出金额: {{ transferType === 'crystal' ? '56.58544568 USD' : '56.58544568 REP' }}
+                    可转出金额: {{ transferType === 'crystal' ? balance.crystal : balance.rep }}
                 </text>
             </view>
 
@@ -46,7 +46,7 @@
                 <!-- 账户ID -->
                 <view class="popup-item">
                     <text class="popup-label">账户ID:</text>
-                    <text class="popup-value">66685522</text>
+                    <text class="popup-value">{{ gatewayId }}</text>
                 </view>
 
                 <!-- 转账数量 -->
@@ -80,6 +80,7 @@
 
 <script>
 import NavBar from "@/components/nav-bar/nav-bar.vue";
+import { getAccountAssets, transferAccount } from "@/api/mine";
 export default {
     components: {
         NavBar
@@ -94,15 +95,31 @@ export default {
             transferAmount: "",
             // 交易密码
             tradePwd: "",
-            // 可转出金额（模拟数据）
+            // 可转出金额
             balance: {
-                crystal: "56.58544568 USD",
-                rep: "56.58544568 REP"
+                crystal: "0.0000 USDT",
+                rep: "0.0000 REP"
             },
             showPassword: true
         };
     },
+    onShow() {
+        this.loadAssets();
+    },
     methods: {
+        async loadAssets() {
+            try {
+                const res = await getAccountAssets();
+                const data = res && res.data ? res.data : {};
+                const usdt = Number(data.balance);
+                const rep = Number(data.repAmt);
+                this.balance.crystal = `${Number.isNaN(usdt) ? "0.0000" : usdt.toFixed(4)} USDT`;
+                this.balance.rep = `${Number.isNaN(rep) ? "0.0000" : rep.toFixed(4)} REP`;
+            } catch (e) {
+                this.balance.crystal = "0.0000 USDT";
+                this.balance.rep = "0.0000 REP";
+            }
+        },
         // 切换密码显示状态
         changePassword() {
             this.showPassword = !this.showPassword;
@@ -132,22 +149,29 @@ export default {
             this.$refs.confirmPopup.close();
         },
         // 确认转账
-        confirmTransfer() {
+        async confirmTransfer() {
             // 校验交易密码
             if (!this.tradePwd.trim()) {
                 uni.showToast({ title: "请输入交易密码", icon: "none" });
                 return;
             }
-            // 模拟转账请求（实际项目替换为接口调用）
             uni.showLoading({ title: "转账中..." });
-            setTimeout(() => {
+            try {
+                await transferAccount({
+                    transferTo: this.gatewayId.trim(),
+                    amount: Number(this.transferAmount),
+                    securityCode: this.tradePwd.trim(),
+                    remark: this.transferType === 'crystal' ? 'USDT转账' : 'REP转账'
+                });
                 uni.hideLoading();
                 uni.showToast({ title: "转账成功", icon: "success" });
                 this.resetPopup();
-                // 清空输入项（可选）
                 this.gatewayId = "";
                 this.transferAmount = "";
-            }, 1500);
+                this.loadAssets();
+            } catch (e) {
+                uni.hideLoading();
+            }
         }
     }
 };

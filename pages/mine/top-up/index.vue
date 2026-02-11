@@ -58,6 +58,7 @@
 
 <script>
 import NavBar from "@/components/nav-bar/nav-bar.vue";
+import { getMemberInfo } from "@/api/mine";
 export default {
     components: {
         NavBar
@@ -70,7 +71,21 @@ export default {
             address: "teawcnaoiaVAVNOAWdfhaffvaoefj1"
         };
     },
+    onShow() {
+        this.loadRechargeAddress();
+    },
     methods: {
+        async loadRechargeAddress() {
+            try {
+                const res = await getMemberInfo();
+                const info = res && res.data ? res.data : {};
+                if (info.walletAddr) {
+                    this.address = info.walletAddr;
+                }
+            } catch (e) {
+                // 请求层已处理错误提示
+            }
+        },
         // 复制收款地址
         copyAddress() {
             uni.setClipboardData({

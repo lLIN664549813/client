@@ -1,7 +1,7 @@
 <template>
   <view>
     <uni-card class="view-title" :title="title">
-      <text class="uni-body view-content">{{ content }}</text>
+      <rich-text class="uni-body view-content" :nodes="content"></rich-text>
     </uni-card>
   </view>
 </template>
@@ -15,10 +15,23 @@
       }
     },
     onLoad(options) {
-      this.title = options.title
-      this.content = options.content
+      const pageTitle = options && options.title ? decodeURIComponent(options.title) : ''
+      this.title = pageTitle
+      this.content = options && options.content ? decodeURIComponent(options.content) : ''
+
+      const eventChannel = this.getOpenerEventChannel && this.getOpenerEventChannel()
+      if (eventChannel) {
+        eventChannel.on('protocolData', ({ title, content }) => {
+          this.title = title || this.title
+          this.content = content || this.content
+          uni.setNavigationBarTitle({
+            title: this.title
+          })
+        })
+      }
+
       uni.setNavigationBarTitle({
-        title: options.title
+        title: this.title
       })
     }
   }

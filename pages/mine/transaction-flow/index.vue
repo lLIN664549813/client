@@ -37,6 +37,7 @@
 
 <script>
 import NavBar from "@/components/nav-bar/nav-bar.vue";
+import { getAccountBills } from "@/api/mine";
 export default {
     components: {
         NavBar
@@ -45,29 +46,12 @@ export default {
         return {
             // 流水类型：buy-买入，sell-卖出
             flowType: "buy",
-            // 模拟交易流水数据
-            flowList: [
-                {
-                    type: "buy",
-                    title: "买入REP",
-                    amount: "REP -3 7272.663",
-                    time: "2025-11-20 15:45:52"
-                },
-                {
-                    type: "sell",
-                    title: "卖出REP",
-                    desc: "卖出REP: QTY:2, FEE:1 7228.663",
-                    amount: "USDT -150",
-                    time: "2025-11-20 15:45:52"
-                },
-                {
-                    type: "buy",
-                    title: "交易撤销退还",
-                    amount: "REP +18 7260.663",
-                    time: "2025-11-20 15:45:52"
-                }
-            ]
+            // 交易流水
+            flowList: []
         };
+    },
+    onShow() {
+        this.loadTradeFlows();
     },
     computed: {
         // 根据类型筛选流水
@@ -76,6 +60,51 @@ export default {
         }
     },
     methods: {
+        async loadTradeFlows() {
+            try {
+                const res = await getAccountBills({ pageNum: 1, pageSize: 50 });
+                const rows = this.extractRows(res);
+                this.flowList = rows.map(item => {
+                    const amount = Number(item.amount);
+                    const type = amount >= 0 ? 'buy' : 'sell';
+                    return {
+                        type,
+                        title: item.dealTypeName || item.dealName || item.transactionType || '交易流水',
+                        desc: item.transactionNo ? `流水号: ${item.transactionNo}` : '',
+                        amount: `${item.assetType || 'USDT'} ${amount >= 0 ? '+' : ''}${Number.isNaN(amount) ? item.amount : amount}`,
+                        time: this.formatTime(item.createTime)
+                    };
+                });
+            } catch (e) {
+                this.flowList = [];
+            }
+        },
+        extractRows(res) {
+            if (!res || !res.data) {
+                return [];
+            }
+            if (Array.isArray(res.data)) {
+                return res.data;
+            }
+            if (Array.isArray(res.data.rows)) {
+                return res.data.rows;
+            }
+            if (Array.isArray(res.rows)) {
+                return res.rows;
+            }
+            return [];
+        },
+        formatTime(value) {
+            if (!value) {
+                return '--';
+            }
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) {
+                return String(value);
+            }
+            const pad = (num) => String(num).padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        },
         // 切换流水类型
         switchType(type) {
             this.flowType = type;

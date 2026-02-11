@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { addReceiveWallet, uploadCommonFile } from "@/api/mine";
+
 export default {
     data() {
         return {
@@ -71,14 +73,13 @@ export default {
                 sizeType: ["original", "compressed"],
                 sourceType: ["album", "camera"],
                 success: (res) => {
-                    // 模拟上传，实际项目调用上传接口
                     this.form.qrcode = res.tempFilePaths[0];
                     uni.showToast({ title: "二维码选择成功", icon: "success" });
                 }
             });
         },
         // 提交表单
-        submitForm() {
+        async submitForm() {
             // 校验必填项
             if (!this.form.label.trim()) {
                 uni.showToast({ title: "请输入标签", icon: "none" });
@@ -88,13 +89,28 @@ export default {
                 uni.showToast({ title: "请输入钱包地址", icon: "none" });
                 return;
             }
-            // 模拟提交
             uni.showLoading({ title: "提交中..." });
-            setTimeout(() => {
+            try {
+                let qrcodeUrl = "";
+                if (this.form.qrcode) {
+                    const uploadRes = await uploadCommonFile(this.form.qrcode);
+                    const uploadData = uploadRes && uploadRes.data ? uploadRes.data : {};
+                    qrcodeUrl = uploadData.url || uploadData.fileName || uploadData.path || "";
+                }
+
+                await addReceiveWallet({
+                    walletName: this.form.label.trim(),
+                    walletAddr: this.form.address.trim(),
+                    walletQrcode: qrcodeUrl,
+                    defaultFlag: 'N'
+                });
+
                 uni.hideLoading();
                 uni.showToast({ title: "添加成功", icon: "success" });
                 this.goBack();
-            }, 1000);
+            } catch (e) {
+                uni.hideLoading();
+            }
         }
     }
 };

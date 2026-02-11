@@ -32,8 +32,8 @@
 
             <!-- 用户Logo + ID/邮箱 -->
             <view class="user-info">
-                <text class="user-id">61953174</text>
-                <text class="user-email">5258112222@emeri.suzuha</text>
+                <text class="user-id">{{ userId || '--' }}</text>
+                <text class="user-email">{{ userEmail || '--' }}</text>
             </view>
 
             <!-- 资产栏 -->
@@ -41,7 +41,7 @@
                 <view class="asset-info">
 
                     <text class="asset-label">当前资产</text>
-                    <text class="asset-value">25,000 REP</text>
+                    <text class="asset-value">{{ assetValue }}</text>
                 </view>
                 <!-- 充值/转账按钮 -->
                 <view class="btn-group">
@@ -62,7 +62,7 @@
             <view class="func-item">
                 <text class="func-label">账号ID</text>
                 <view class="func-right">
-                    <text class="func-value">61953174</text>
+                    <text class="func-value">{{ userId || '--' }}</text>
                     <text class="func-value" @click="copyId">复制</text>
                 </view>
             </view>
@@ -73,7 +73,7 @@
                 <view class="func-right" v-if="!isBind">
                     <text class="func-value">绑定</text>
                 </view>
-                <text class="func-value" v-else>61953174</text>
+                <text class="func-value" v-else>{{ userId || '--' }}</text>
             </view>
 
             <!-- 我的钱包 -->
@@ -126,7 +126,7 @@
                 <!-- GatewayID -->
                 <view class="popup-item">
                     <text class="popup-label">GatewayID:</text>
-                    <text class="popup-value">61953174</text>
+                    <text class="popup-value">{{ userId || '--' }}</text>
                 </view>
                 <!-- 登录密码 -->
                 <view class="popup-item">
@@ -140,7 +140,7 @@
                     </view>
                 </view>
                 <!-- 提示文字 -->
-                <text class="popup-tips">*Gateway ID 一旦绑定确认无法更改。</text>
+                <text class="popup-tips">*Gateway ID 一经绑定确认后无法修改。</text>
                 <!-- 按钮组 -->
                 <view class="popup-btn-group">
                     <button class="popup-btn cancel-btn" @click="closeBindPopup">取消</button>
@@ -152,6 +152,8 @@
 </template>
 
 <script>
+import { getAccountAssets, getMemberInfo } from "@/api/mine";
+
 export default {
     data() {
         return {
@@ -160,7 +162,9 @@ export default {
             // 是否已绑定GatewayID
             isBind: false,
             // 账号ID
-            userId: "61953174",
+            userId: "",
+            userEmail: "",
+            assetValue: "0.0000 REP",
             langOptions: {
                 zh: {
                     // 中文语言选项
@@ -178,7 +182,35 @@ export default {
             tradePwd: ''
         };
     },
+    onShow() {
+        this.loadMemberInfo();
+    },
     methods: {
+        async loadMemberInfo() {
+            try {
+                const res = await getMemberInfo();
+                const info = res && res.data ? res.data : {};
+                this.userId = String(info.memberNo || info.memberId || "");
+                this.userEmail = info.email || info.mobileNum || "";
+                if (info.account && info.account.repAmt !== undefined && info.account.repAmt !== null) {
+                    this.assetValue = `${this.normalizeNumber(info.account.repAmt)} REP`;
+                    return;
+                }
+                const assetRes = await getAccountAssets();
+                const assets = assetRes && assetRes.data ? assetRes.data : {};
+                const repAmt = assets.repAmt !== undefined && assets.repAmt !== null ? assets.repAmt : assets.balance;
+                this.assetValue = `${this.normalizeNumber(repAmt)} REP`;
+            } catch (e) {
+                this.assetValue = "0.0000 REP";
+            }
+        },
+        normalizeNumber(value) {
+            const num = Number(value);
+            if (Number.isNaN(num)) {
+                return "0.0000";
+            }
+            return num.toFixed(4);
+        },
         // 切换语言选择弹窗显示/隐藏
         toggleLangPopup() {
             // this.$refs.langPopup.toggle();

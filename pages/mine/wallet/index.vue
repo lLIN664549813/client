@@ -24,12 +24,12 @@
                 <!-- REP资产 -->
                 <view class="asset-item">
                     <text class="asset-type">REP</text>
-                    <text class="asset-value">29,850.1951</text>
+                    <text class="asset-value">{{ assetData.rep }}</text>
                 </view>
                 <!-- USDT资产 -->
                 <view class="asset-item">
                     <text class="asset-type">USDT</text>
-                    <text class="asset-value">29,850.1595</text>
+                    <text class="asset-value">{{ assetData.usdt }}</text>
                 </view>
             </view>
 
@@ -44,23 +44,41 @@
 
 <script>
 import NavBar from "@/components/nav-bar/nav-bar.vue";
+import { getAccountAssets } from "@/api/mine";
 export default {
     components: {
         NavBar
     },
     data() {
         return {
-            // 模拟资产数据（实际项目从接口获取）
+            // 资产数据
             assetData: {
-                rep: "29,850.1951",
-                usdt: "29,850.1595"
+                rep: "0.0000",
+                usdt: "0.0000"
             }
         };
     },
+    onShow() {
+        this.loadAssets();
+    },
     methods: {
-        // 返回上一页
-        goBack() {
-            uni.navigateBack();
+        async loadAssets() {
+            try {
+                const res = await getAccountAssets();
+                const assets = res && res.data ? res.data : {};
+                this.assetData.rep = this.formatAmount(assets.repAmt);
+                this.assetData.usdt = this.formatAmount(assets.balance);
+            } catch (e) {
+                this.assetData.rep = "0.0000";
+                this.assetData.usdt = "0.0000";
+            }
+        },
+        formatAmount(value) {
+            const amount = Number(value);
+            if (Number.isNaN(amount)) {
+                return "0.0000";
+            }
+            return amount.toFixed(4);
         },
         // 跳转到账单/明细页面
         goToBill() {
