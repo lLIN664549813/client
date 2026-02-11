@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "首页",
-  "usingComponents": {
-    "buy": "/pages/home/components/buy",
-    "sell": "/pages/home/components/sell"
-  }
-}

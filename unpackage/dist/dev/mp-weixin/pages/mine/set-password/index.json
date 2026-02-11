@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "设置密码",
-  "usingComponents": {
-    "uni-icons": "/uni_modules/uni-icons/components/uni-icons/uni-icons",
-    "nav-bar": "/components/nav-bar/nav-bar"
-  }
-}

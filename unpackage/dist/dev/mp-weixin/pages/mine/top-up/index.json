@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "充值",
-  "usingComponents": {
-    "nav-bar": "/components/nav-bar/nav-bar",
-    "uni-card": "/uni_modules/uni-card/components/uni-card/uni-card"
-  }
-}
