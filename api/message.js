@@ -1,0 +1,134 @@
+/*
+ * @Description: '消息模块接口封装'
+ * @Version: 1.0
+ * @Autor:'zhanglin'
+ * @Date: 2026-02-11 17:36:05
+ * @LastEditors: 'zhanglin'
+ * @LastEditTime: 2026-02-11 18:05:00
+ */
+import request from "@/utils/request";
+
+const gatewayApiPrefix = "/gateway/api";
+
+export function queryConvosList(params) {
+  return request({
+    url: `${gatewayApiPrefix}/im-convos/list`,
+    method: "get",
+    params,
+  });
+}
+
+export function queryUserConvos(params) {
+  return request({
+    url: `${gatewayApiPrefix}/im-convos/withConvos`,
+    method: "get",
+    params,
+  });
+}
+
+export function removeConvos(data) {
+  return request({
+    url: `${gatewayApiPrefix}/im-convos/remove`,
+    method: "post",
+    data,
+  });
+}
+
+export function zeroConvosUnread(data) {
+  return request({
+    url: `${gatewayApiPrefix}/im-convos/zero`,
+    method: "post",
+    data,
+  });
+}
+
+export function queryConvosMsgList(params) {
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/list`,
+    method: "get",
+    params,
+  });
+}
+
+export function queryHistoryMsgList(params) {
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/historyList`,
+    method: "get",
+    params,
+  });
+}
+
+export function emptyConvosMsgList(convosId) {
+  const targetConvosId =
+    typeof convosId === "object" && convosId !== null ? convosId.convosId : convosId;
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/empty`,
+    method: "post",
+    params: {
+      convosId: targetConvosId,
+    },
+  });
+}
+
+export function removeConvosMsgList(data) {
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/remove`,
+    method: "post",
+    data,
+  });
+}
+
+export function sendMsg(data) {
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/send`,
+    method: "post",
+    data,
+  });
+}
+
+export function signConvosMsgs(data) {
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/sign`,
+    method: "post",
+    data,
+  });
+}
+
+export function countConvosUnread() {
+  return request({
+    url: `${gatewayApiPrefix}/im-msg/unread`,
+    method: "get",
+  });
+}
+
+export function getLatestMessage(params) {
+  return request({
+    url: `${gatewayApiPrefix}/message/latest`,
+    method: "get",
+    params,
+  });
+}
+
+export function getMessageList(params) {
+  return request({
+    url: `${gatewayApiPrefix}/message/list`,
+    method: "get",
+    params,
+  });
+}
+
+export function signUnreadMessages(data) {
+  return request({
+    url: `${gatewayApiPrefix}/message/sign`,
+    method: "post",
+    data,
+  });
+}
+
+export function countUnreadMessage(params) {
+  return request({
+    url: `${gatewayApiPrefix}/message/unread`,
+    method: "get",
+    params,
+  });
+}

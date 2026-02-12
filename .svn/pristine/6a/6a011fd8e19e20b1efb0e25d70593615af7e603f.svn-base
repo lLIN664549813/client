@@ -53,7 +53,6 @@
 import config from "@/config";
 import NavBar from "@/components/nav-bar/nav-bar.vue";
 import {
-  emptyConvosMsgList,
   queryConvosMsgList,
   queryUserConvos,
   sendMsg,
@@ -224,11 +223,14 @@ export default {
       this.loading = true;
       try {
         await this.ensureConvos();
-        const params = {
-          withId: this.withId || "",
-          convosType: 0,
-          convosId: this.convosId || "",
-        };
+        const params = {};
+        if (this.convosId) {
+          params.convosId = this.convosId;
+        }
+        if (this.withId) {
+          params.withId = this.withId;
+        }
+        params.convosType = this.convosType === 1 ? 1 : 0;
 
         const res = await queryConvosMsgList(params);
         const rows = this.extractRows(res);
@@ -269,7 +271,7 @@ export default {
       const body = {
         convosId: this.convosId || undefined,
         withId: this.withId || undefined,
-        convosType: 0,
+        convosType: this.convosType === 1 ? 1 : 0,
         userId: this.currentUserId || undefined,
         msgId: msgIdList.length > 0 ? msgIdList[0] : undefined,
         msgIdList: msgIdList.length > 0 ? msgIdList : undefined,
@@ -294,34 +296,7 @@ export default {
     },
     openMore() {
       uni.showActionSheet({
-        itemList: ["清空会话"],
-        success: (res) => {
-          if (res.tapIndex === 0) {
-            this.clearMessages();
-          }
-        },
-      });
-    },
-    clearMessages() {
-      if (!this.convosId) {
-        uni.showToast({ title: "会话ID为空", icon: "none" });
-        return;
-      }
-      uni.showModal({
-        title: "提示",
-        content: "确认清空当前会话消息？",
-        success: async (res) => {
-          if (!res.confirm) {
-            return;
-          }
-          try {
-            await emptyConvosMsgList(this.convosId);
-            this.chatList = [];
-            uni.showToast({ title: "已清空", icon: "none" });
-          } catch (e) {
-            uni.showToast({ title: "清空失败", icon: "none" });
-          }
-        },
+        itemList: ["选择图片", "拍摄照片"],
       });
     },
     isImageMsg(item) {
@@ -355,7 +330,7 @@ export default {
         convosId: this.convosId || 0,
         recipientId: this.withId || undefined,
         senderId: this.currentUserId || undefined,
-        bizType: 0,
+        bizType: this.convosType === 1 ? 1 : 0,
         type: "text",
         content,
       };
